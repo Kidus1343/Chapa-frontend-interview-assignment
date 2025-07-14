@@ -49,7 +49,7 @@ The application simulates three distinct user roles, each with a unique dashboar
 
 The project follows a clean, feature-oriented structure to ensure scalability and maintainability.
 
-
+##
 /
 ├── src/
 │ ├── app/ # Core Next.js routing, layout, and global styles
