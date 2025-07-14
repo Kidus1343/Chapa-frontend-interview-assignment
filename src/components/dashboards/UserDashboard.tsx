@@ -709,12 +709,12 @@ export function UserDashboard() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">Recipient Details</Label>
                 <Input
                   id="description"
                   value={transactionForm.description}
                   onChange={(e) => setTransactionForm((prev) => ({ ...prev, description: e.target.value }))}
-                  placeholder="Payment description"
+                  placeholder="Recipient Details"
                   required
                 />
               </div>
