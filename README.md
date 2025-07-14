@@ -4,7 +4,14 @@ This project is a role-based dashboard SPA built for a fictional Payment Service
 
 [![Deploy with Vercel](https://vercel.com/button)](https://chapa-frontend-interview-assign-kidus1343.vercel.app/)
 
-**Live Demo:** [https://chapa-frontend-interview-assign-kidus1343.vercel.app/](https://chapa-frontend-interview-assign-kidus1343.vercel.app/)
+**Live Demo:** [https://chapa-frontend-interview-assignment-five.vercel.app/](https://chapa-frontend-interview-assignment-five.vercel.app/) 
+
+## Screenshots
+<img width="1745" height="939" alt="image" src="https://github.com/user-attachments/assets/b17de3c6-e666-4c1b-bf2f-ff00f8a3c5e2" />
+<img width="1292" height="1049" alt="image" src="https://github.com/user-attachments/assets/ff074dde-33d5-4824-9bb8-8e8ad48dba5f" />
+<img width="1330" height="971" alt="image" src="https://github.com/user-attachments/assets/2977a697-2e07-4461-8512-abfd03bf9949" />
+<img width="1639" height="1060" alt="image" src="https://github.com/user-attachments/assets/96a84f09-2c67-4faf-b298-34cde7b2c66f" />
+
 
 ## Features
 
