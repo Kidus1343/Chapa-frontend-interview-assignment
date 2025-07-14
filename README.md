@@ -56,7 +56,7 @@ The application simulates three distinct user roles, each with a unique dashboar
 
 The project follows a clean, feature-oriented structure to ensure scalability and maintainability.
 
-##
+ ```bash
 /
 ├── src/
 │ ├── app/ # Core Next.js routing, layout, and global styles
@@ -76,7 +76,7 @@ The project follows a clean, feature-oriented structure to ensure scalability an
 │ └── index.ts # TypeScript type definitions
 ├── package.json
 └── tailwind.config.ts
-
+```
 
 ## Getting Started
 
