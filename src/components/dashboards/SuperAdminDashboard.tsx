@@ -1,7 +1,8 @@
 "use client"
 
+// CHANGE 1: Import `useCallback` from React
 import type React from "react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,20 +33,16 @@ export function SuperAdminDashboard() {
   const [submitting, setSubmitting] = useState(false)
   const [removing, setRemoving] = useState<string | null>(null)
 
-  // State for the confirmation dialog
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [selectedAdmin, setSelectedAdmin] = useState<User | null>(null)
 
-  useEffect(() => {
-    loadData()
-  }, [])
-
-  const loadData = async () => {
+  // CHANGE 2: Wrap `loadData` in `useCallback` to give it a stable reference
+  const loadData = useCallback(async () => {
     try {
       const [statsData, usersData] = await Promise.all([apiService.getSystemStats(), apiService.getUsers()])
       setStats(statsData)
       setAdmins(usersData.filter((u) => u.role === "admin"))
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to load system data",
@@ -54,7 +51,11 @@ export function SuperAdminDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast]) // `toast` is a dependency from an external hook
+
+  useEffect(() => {
+    loadData()
+  }, [loadData]) // CHANGE 3: Add the memoized `loadData` to the dependency array
 
   const handleAddAdmin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -67,7 +68,7 @@ export function SuperAdminDashboard() {
         title: "Success",
         description: "Admin added successfully",
       })
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to add admin",
@@ -78,13 +79,11 @@ export function SuperAdminDashboard() {
     }
   }
 
-  // This function now opens the confirmation dialog
   const handleInitiateRemove = (admin: User) => {
     setSelectedAdmin(admin)
     setIsAlertOpen(true)
   }
 
-  // This function handles the actual removal after confirmation
   const handleConfirmRemove = async () => {
     if (!selectedAdmin) return
 
@@ -96,7 +95,7 @@ export function SuperAdminDashboard() {
         title: "Success",
         description: "Admin removed successfully",
       })
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to remove admin",
@@ -104,7 +103,8 @@ export function SuperAdminDashboard() {
       })
     } finally {
       setRemoving(null)
-      setSelectedAdmin(null) // Clean up state
+      setSelectedAdmin(null)
+      setIsAlertOpen(false) // BUG FIX: Ensure the dialog closes after the action
     }
   }
 
@@ -119,7 +119,6 @@ export function SuperAdminDashboard() {
     <div className="space-y-6">
       {/* System Stats */}
       <div className="grid gap-4 md:grid-cols-4">
-        {/* ... stats cards remain the same ... */}
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Payments</CardTitle>
@@ -164,7 +163,6 @@ export function SuperAdminDashboard() {
 
       {/* Admin Management */}
       <div className="grid gap-6 md:grid-cols-2">
-        {/* ... add admin form remains the same ... */}
         <Card>
           <CardHeader>
             <CardTitle>Add New Admin</CardTitle>
@@ -196,7 +194,7 @@ export function SuperAdminDashboard() {
               <Button type="submit" className="w-full" style={{ backgroundColor: "#7dc400", color: "#fff" }} disabled={submitting}>
                 {submitting ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" style={{ color: "#7dc400" }}/>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Adding...
                   </>
                 ) : (
@@ -236,11 +234,11 @@ export function SuperAdminDashboard() {
                     <Button
                       variant="destructive"
                       size="sm"
-                      onClick={() => handleInitiateRemove(admin)} // Updated onClick handler
+                      onClick={() => handleInitiateRemove(admin)}
                       disabled={removing === admin.id}
                     >
                       {removing === admin.id ? (
-                        <Loader2 className="h-4 w-4 animate-spin" style={{ color: "#7dc400" }}/>
+                        <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <>
                           <UserMinus className="h-4 w-4 mr-2" />

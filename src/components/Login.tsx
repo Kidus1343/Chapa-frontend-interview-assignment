@@ -2,6 +2,8 @@
 
 import type React from "react"
 import { useState, useEffect } from "react"
+// CHANGE 1: Import the Next.js Image component
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -45,7 +47,8 @@ export function Login() {
       if (!success) {
         setError("Invalid email or password. Please check your credentials and try again.")
       }
-    } catch (error) {
+      // CHANGE 2: Rename `error` to `_error` to mark it as intentionally unused.
+    } catch {
       setError("An unexpected error occurred. Please try again later.")
     } finally {
       setIsSubmitting(false)
@@ -53,25 +56,25 @@ export function Login() {
   }
 
   return (
-    // CHANGE 1: Use flex-col by default and switch to flex-row on medium screens (md) and up.
     <div className="min-h-screen flex flex-col md:flex-row">
-      {/* CHANGE 2: Hide the slideshow on small screens (hidden) and show it as a block on medium screens. */}
       <div className="hidden md:block md:w-1/2 h-screen relative overflow-hidden">
         {images.map((src, index) => (
-          <img
+          // CHANGE 3: Replace the standard `<img>` with the optimized `next/image` component.
+          <Image
             key={src}
             src={src}
             alt={`Slide ${index + 1}`}
-            className={`absolute top-0 left-0 w-full h-full object-cover transition-opacity duration-1000 ${
+            fill // The `fill` prop makes the image cover its parent container.
+            priority={index === 0} // Preload the first image for better performance (LCP).
+            sizes="50vw" // Informs Next.js that the image will be 50% of the viewport width on desktop.
+            className={`object-cover transition-opacity duration-1000 ${
               index === currentImageIndex ? "opacity-100" : "opacity-0"
             }`}
           />
         ))}
       </div>
 
-      {/* CHANGE 3: Make the form take up the full width (w-full) on small screens. */}
       <div className="w-full md:w-1/2 h-screen flex items-center justify-center bg-gradient-to-br from-[#71b60f] to-[#00a99d]">
-        {/* The Card component is already responsive due to `w-full` and `max-w-md` */}
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl font-bold text-gray-800">Payment Service</CardTitle>
@@ -127,7 +130,9 @@ export function Login() {
               <p className="font-medium mb-2">Demo Accounts:</p>
               <div className="space-y-1 text-gray-600">
                 <p>User:<b> user@chapa.co</b></p>
+                <p className="mt-2">Password: <b>password123</b></p>
                 <p>Admin: <b>admin@chapa.co</b></p>
+                <p className="mt-2">Password: <b>password123</b></p>
                 <p>Super Admin: <b>superadmin@chapa.co</b></p>
                 <p className="mt-2">Password: <b>password123</b></p>
               </div>

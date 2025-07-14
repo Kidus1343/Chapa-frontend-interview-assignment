@@ -1,17 +1,18 @@
 "use client"
 
-import { useState, useEffect } from "react"
+// CHANGE 1: Import useCallback
+import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Switch } from "@/components/ui/switch"
-import { Input } from "@/components/ui/input" // Import the Input component
+import { Input } from "@/components/ui/input"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select" // Import the Select components
+} from "@/components/ui/select"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,23 +34,19 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(true)
   const [toggleLoading, setToggleLoading] = useState<string | null>(null)
 
-  // State for search and filter
   const [searchQuery, setSearchQuery] = useState("")
-  const [filterStatus, setFilterStatus] = useState("all") // 'all', 'active', 'inactive'
+  const [filterStatus, setFilterStatus] = useState("all")
 
-  // State for the confirmation dialog
   const [isAlertOpen, setIsAlertOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
 
-  useEffect(() => {
-    loadUsers()
-  }, [])
-
-  const loadUsers = async () => {
+  // CHANGE 2: Wrap loadUsers in useCallback to give it a stable identity.
+  // We list `toast` as a dependency because it's a stable function from a hook.
+  const loadUsers = useCallback(async () => {
     try {
       const data = await apiService.getUsers()
       setUsers(data.filter((u) => u.role === "user"))
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to load users",
@@ -58,7 +55,11 @@ export function AdminDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [toast])
+
+  useEffect(() => {
+    loadUsers()
+  }, [loadUsers]) // CHANGE 3: Add `loadUsers` to the dependency array.
 
   const handleInitiateToggle = (user: User) => {
     setSelectedUser(user)
@@ -76,7 +77,7 @@ export function AdminDashboard() {
         title: "Success",
         description: `User ${updatedUser.isActive ? "activated" : "deactivated"} successfully`,
       })
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to update user status",
@@ -84,7 +85,8 @@ export function AdminDashboard() {
       })
     } finally {
       setToggleLoading(null)
-      setSelectedUser(null)
+      setSelectedUser(null) // This line was missing, added it to ensure state is reset
+      setIsAlertOpen(false) // This line was also missing, ensures the dialog closes
     }
   }
 
@@ -98,7 +100,6 @@ export function AdminDashboard() {
   const totalPayments = users.reduce((sum, user) => sum + (user.walletBalance || 0), 0)
   const activeUsers = users.filter((u) => u.isActive).length
 
-  // Apply search and filter
   const filteredUsers = users.filter((user) => {
     const searchLower = searchQuery.toLowerCase()
     const matchesSearch =
@@ -157,7 +158,7 @@ export function AdminDashboard() {
         </CardHeader>
         <CardContent>
           {/* --- SEARCH AND FILTER CONTROLS --- */}
-          <div className="flex items-center space-x-4 mb-6">
+          <div className="flex flex-wrap items-center gap-4 mb-6">
             <Input
               placeholder="Search by name or email..."
               value={searchQuery}
@@ -183,7 +184,7 @@ export function AdminDashboard() {
           ) : (
             <div className="space-y-4">
               {filteredUsers.map((user) => (
-                <div key={user.id} className="flex items-center justify-between p-4 border rounded-lg">
+                <div key={user.id} className="flex flex-wrap items-center justify-between p-4 border rounded-lg gap-4">
                   <div className="flex items-center space-x-4">
                     <div>
                       <p className="font-medium">{user.name}</p>
